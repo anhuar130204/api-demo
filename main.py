@@ -1,9 +1,25 @@
-
-
+import csv
+import json
 from fastapi import FastAPI
+from fastapi.responses import JSONResponse
 
 app = FastAPI()
 
+class Contactos:
+    def leerContactos(self) -> list:
+        try:
+            contactos_list = []
+            with open("contactos.csv", "r") as file:
+                reader = csv.DictReader(file, delimiter=",")
+                for row in reader:
+                    contactos_list.append(row)
+            return contactos_list
+        except Exception as e:
+            print(f"Error leerContactos(): {e}")
+            return []
+
+def convertir_a_json(contactos_list):
+    return json.dumps(contactos_list, indent=4)
 
 @app.get("/")
 def read_root():
@@ -11,23 +27,6 @@ def read_root():
 
 @app.get("/v1/contactos")
 async def get_contactos():
-  class Contactos:  # Clase Contactos
-    def __init__(self): # Constructor de la clase
-        pass # Inicializa el objeto  
-        #TODO READ contactos.CSV
-        def leerContactos(self) -> bool: # Metodo para listar los despensa registrados
-                try: # Prueba el codigo y si ocurre una Excepcion la atrapa
-                    with open("contactos.csv", "r") as file: # Abre el archivo para tener acceso a los registros
-                        reader = csv.DictReader(file, delimiter=",") # Crer un objeto reader para leer los registros separandolos por el delimitador ,
-                        for row in reader: # Recorre todos los registros encontrados y almacena temporalmente cada uno en row
-                            print(f"Registro: {row}") # imprime los datos del registro como un diccionario
-                    return True # Regresa True si el metodo se ejecuto correctamente
-                except Exception as e: # Atrapa cualquier excepcion
-                    print(f"Error leerContactos() :{e.args}") # Muestra en consola el error que ocurrio
-                    return False # Regresa False si ocurrio un error en el metodo
-   contacto = Contactos()
-   contacto.leerContactos()
-#TODO COMVERTIR CONTACTOS JSON ENCODE
-# TODO SAVE IN RESPONSE Y MOSTRAR CON LA URI
-#response = []
-#return response
+    contacto = Contactos()
+    contactos_list = contacto.leerContactos()
+    return JSONResponse(content=contactos_list)
