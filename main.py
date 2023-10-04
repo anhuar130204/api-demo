@@ -2,7 +2,7 @@ import csv
 from fastapi import FastAPI, Form, Request
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-
+import requests
 app = FastAPI()
 
 class Contactos:
@@ -18,7 +18,7 @@ class Contactos:
             print(f"Error leerContactos(): {e}")
             return []
 
-class ContactoCreate(BaseModel):
+class Contacto(BaseModel):
     id_contacto: int
     nombre: str
     primer_apellido: str
@@ -26,7 +26,7 @@ class ContactoCreate(BaseModel):
     email: str
     telefono: int
 
-# Almacenar los contactos en una lista en memoria
+
 contactos_agregar = []
 
 @app.get("/", summary="Raiz")
@@ -39,29 +39,28 @@ async def get_contactos():
     contactos_list = contacto.leerContactos()
     return JSONResponse(content=contactos_list)
 
-@app.put("/v1/contactos/actualizar")
+@app.put("/v1/contactos")
 async def actualizar_contacto(id_contacto: int, contacto_actualizado: dict):
-    # Implementa la lógica para actualizar el contacto aquí
-    # Debes leer el CSV, encontrar y actualizar el contacto, y luego guardar el CSV nuevamente
-    return JSONResponse(content={"message": "Contacto actualizado"})
-
-@app.post("/v1/contactos/agregar")
-async def crear_contacto(
+   return JSONResponse(content={"message": "Contacto actualizado"})
+"""
+@app.post("/v1/contactos")
+ async def crear_contacto(
     nombre: str = Form(...),
     primer_apellido: str = Form(...),
     segundo_apellido: str = Form(...),
     email: str = Form(...),
     telefono: int = Form(...)
-):
-    """
+): """
+"""
     #  endpoint para crear un nuevo contacto
     # el contacto nuevo se debe almacenar en un archivo csv    
- """
+"""
+@app.post("/v1/contactos")
+async def post_contacto(contacto:Contacto):
+    return contacto
+    
+    """ nuevo_id = len(contactos_agregar) + 1
 
-    # Generar un nuevo ID para el contacto (puede ser simplemente el índice en la lista + 1)
-    nuevo_id = len(contactos_agregar) + 1
-
-    # Crear un diccionario con los datos del nuevo contacto
     nuevo_contacto = {
         "id_contacto": nuevo_id,
         "nombre": nombre,
@@ -71,10 +70,9 @@ async def crear_contacto(
         "telefono": telefono,
     }
 
-    # Agregar el nuevo contacto a la lista de contactos
+  
     contactos_agregar.append(nuevo_contacto)
 
-    # Guardar el nuevo contacto en el archivo CSV
     with open("contactos.csv", "a", newline="") as file:
         fieldnames = ["id_contacto", "nombre", "primer_apellido", "segundo_apellido", "email", "telefono"]
         writer = csv.DictWriter(file, fieldnames=fieldnames)
@@ -82,5 +80,6 @@ async def crear_contacto(
             writer.writeheader()
         writer.writerow(nuevo_contacto)
 
-    # Devolver una respuesta con el nuevo contacto
+    
     return JSONResponse(content=nuevo_contacto)
+ """
