@@ -1,5 +1,5 @@
 import csv
-from fastapi import FastAPI, Form, Request
+from fastapi import FastAPI, Form, Request, status
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 import requests
@@ -55,8 +55,12 @@ async def actualizar_contacto(id_contacto: int, contacto_actualizado: dict):
     #  endpoint para crear un nuevo contacto
     # el contacto nuevo se debe almacenar en un archivo csv    
 """
-@app.post("/v1/contactos")
+@app.post("/v1/contactos", status_code=status.HTTP_201_CREATED)
 async def post_contacto(contacto:Contacto):
+    """
+    #  endpoint para crear un nuevo contacto
+      
+"""
     return contacto
     
     """ nuevo_id = len(contactos_agregar) + 1
