@@ -1,3 +1,4 @@
-nombre,email
+id_contacto,nombre,primer_apellido,segundo_apellido,email,telefono
 dejah,dejah@gmail.com
-carlos,carlos@gmail.com
+carlos,carlos@gmail.com1,
+
