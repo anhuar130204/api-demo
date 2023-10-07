@@ -1,56 +1,49 @@
 import requests
-import json
-URI = "https://www.dnd5eapi.co/api/classes"
 
+# URL base de la API
+BASE_URL = "https://www.dnd5eapi.co"
 
+# Realizar una solicitud GET a la API para obtener la lista de clases
+response = requests.get(f"{BASE_URL}/api/classes")
 
-
-print(f"GET: {response.text}")
-
-response_json = json.loads(response.text)
-print("1.-" + f"{response_json['results'][0]['name']}" )
-print("2.-" +f"{response_json['results'][1]['name']}")
-print("3.-" +f"{response_json['results'][2]['name']}")
-print("4.-" +f"{response_json['results'][3]['name']}")
-print("5.-" +f"{response_json['results'][4]['name']}")
-print("6.-" +f"{response_json['results'][5]['name']}")
-print("7.-" +f"{response_json['results'][6]['name']}")
-print("8.-" +f"{response_json['results'][7]['name']}")
-print("9.-" +f"{response_json['results'][8]['name']}")
-print("10.-" +f"{response_json['results'][9]['name']}")
-print("11.-" +f"{response_json['results'][10]['name']}")
-print("12.-" +f"{response_json['results'][11]['name']}")
-
-numero = int(input("introdusca el numero para poder ver sus capacidades:"))
-
-if numero == 1:
-    url = URI +"/barbarian"
-     print(f"{response_json['results']}")
-elif numero == 2:
-     url = URI +"/bard"
-     print(f"{response_json['results'][numero]}")
-elif numero == 3:
-     url = URI +"/cleric"
-     print(f"{response_json['results'][numero]}")
-elif numero == 4:
-     url = URI +"/druid"
-     print(f"{response_json['results'][numero]}")
-elif numero == 5:
-     url = URI +"/fighter"
-     print(f"{response_json['results'][numero]}")
-elif numero == 6:
-     url = URI +"/monk"
-     print(f"{response_json['results'][numero]}")
-elif numero == 7:
-     url = URI +"/paladin"
-     print(f"{response_json['results'][numero]}")
-elif numero == 8:
-     url = URI +"/ranger"
-     print(f"{response_json['results'][numero]}")
-elif numero == 9:
-     url = URI +"/rogue"
-     print(f"{response_json['results'][numero]}")
-     
-
-
-
+# Comprobar si la solicitud fue exitosa
+if response.status_code == 200:
+    classes_data = response.json()['results']
+    
+    # Iterar a través de las clases
+    for class_info in classes_data:
+        class_url = class_info['url']
+        
+        # Realizar una solicitud GET a la URL de la clase completa
+        response_class = requests.get(f"{BASE_URL}{class_url}")
+        
+        # Comprobar si la solicitud fue exitosa
+        if response_class.status_code == 200:
+            class_data = response_class.json()
+            
+            # Obtener las proficiencias de la clase
+            proficiencies = class_data.get("proficiencies", [])
+            
+            if proficiencies:
+                class_name = class_data['name']
+                print(f"Proficiencias de la Clase {class_name}:")
+                for proficiencia in proficiencies:
+                    print(f"- {proficiencia['name']}")
+                    
+                    # Acceder a /api/proficiencies/skill-stealth
+                    if "/api/proficiencies/skill-stealth" in proficiencia['url']:
+                        proficiency_url = f"{BASE_URL}{proficiencia['url']}"
+                        proficiency_response = requests.get(proficiency_url)
+                        
+                        # Comprobar si la solicitud fue exitosa
+                        if proficiency_response.status_code == 200:
+                            proficiency_data = proficiency_response.json()
+                            print("\nDetalles de la Proficiencia 'skill-stealth':")
+                            print(f"Nombre: {proficiency_data['name']}")
+                            print(f"Tipo: {proficiency_data['type']}")
+                        else:
+                            print("No se pudieron obtener los detalles de la proficiencia 'skill-stealth'.")
+        else:
+            print(f"No se pudieron obtener los detalles de la clase {class_info['name']}.")
+else:
+    print("La solicitud a la API falló. Por favor, inténtalo más tarde.")
