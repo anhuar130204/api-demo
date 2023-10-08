@@ -3,7 +3,9 @@ from fastapi import FastAPI, Form, Request, status
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 import requests
+from typing import Optional
 app = FastAPI()
+
 
 class Contactos:
     def leerContactos(self) -> list:
@@ -34,10 +36,27 @@ async def root(request: Request):
     return {"message": "¡Hola, mundo!"}
 
 @app.get("/v1/contactos")
-async def get_contactos():
+async def get_contactos(variable_busqueda: Optional[str] = None):
     contacto = Contactos()
     contactos_list = contacto.leerContactos()
-    return JSONResponse(content=contactos_list)
+    
+    if variable_busqueda:
+        # Convertir la búsqueda a minúsculas para que sea insensible a mayúsculas y minúsculas
+        variable_busqueda = variable_busqueda.lower()
+        
+        # Filtrar los contactos en función del término de búsqueda
+        contactos_filtrados = [
+            c for c in contactos_list if (
+                (c.get("nombre") or "").lower() == variable_busqueda or
+                (c.get("primer_apellido") or "").lower() == variable_busqueda or
+                (c.get("segundo_apellido") or "").lower() == variable_busqueda
+            )
+        ]
+        
+        return JSONResponse(content=contactos_filtrados)
+    else:
+        return JSONResponse(content=contactos_list)
+
 
 @app.put("/v1/contactos")
 async def actualizar_contacto(id_contacto: int, contacto_actualizado: dict):
